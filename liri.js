@@ -12,8 +12,8 @@ const term = process.argv.slice(3).join(" ");
 if (search === "movie-this") {
   console.log(term)
   getMovie(term);
-} else {
-  console.log("Searching for TV Actor");
+} else if (search == "concert-this") {
+  getConcert(term);
 }
 
 
@@ -42,33 +42,38 @@ function getMovie(movie) {
       ].join("\n\n");
 
       // Append showData and the divider to log.txt, print showData to the console
-      fs.appendFile("log.txt", movieData + divider, function (err) {
+      fs.appendFile("movies.txt", movieData + divider, function (err) {
         if (err) throw err;
         console.log(movieData);
       });
     })
 }
 
+function getConcert(artist) {
+  const divider = "\n------------------------------------------------------------\n\n";
 
-// var artist = 'Skrillex';
-// axios
-//   .get(
-//     'https://rest.bandsintown.com/artists/' +
-//       artist +
-//       '/events?app_id=codingbootcamp'
-//   )
-//   .then(function(response) {
-//     const eventsArray = [];
-//     const events = response.data;
-//     events.forEach(event => {
-//       const name = event.venue.name;
-//       const location = event.venue.city;
-//       const date = event.datetime;
-//       eventsArray.push({
-//         name,
-//         location,
-//         date
-//       });
-//     });
-//     console.log(eventsArray);
-//   });
+  axios
+    .get(
+      'https://rest.bandsintown.com/artists/Skrillex/events?app_id=codingbootcamp'
+    )
+    .then(function (response) {
+      //console.log(response.data)
+      const jsonData = response.data
+      let concertData = ''
+      //console.log(jsonData)
+      jsonData.forEach(event => {
+        //console.log(event)
+        concertData = [
+          "Name " + event.venue.name,
+          "Location " + event.venue.city,
+          "Date " + event.datetime
+        ].join("\n\n");
+        console.log(concertData + divider);
+      });
+      //Append showData and the divider to log.txt, print showData to the console
+      fs.appendFile("concert.txt", concertData + divider, function (err) {
+        if (err) throw err;
+
+      });
+    })
+}
