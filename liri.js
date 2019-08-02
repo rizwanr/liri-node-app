@@ -2,21 +2,26 @@ const axios = require('axios');
 const fs = require('fs');
 
 // Grab search command line argument
-const search = process.argv[2];
+let search = process.argv[2];
 // Joining the remaining arguments since an actor or tv show name may contain spaces
-const term = process.argv.slice(3).join(' ');
+let term = process.argv.slice(3).join(' ');
 
 const divider =
   '\n------------------------------------------------------------\n\n';
 
 // Print whether searching for a show or actor, print the term as well
-if (search === 'movie-this') {
-  console.log(term);
-  getMovie(term);
-} else if (search === 'concert-this') {
-  getConcert(term);
-} else if (search === 'spotify-this-song') {
-  getSpotifySongDetails(term);
+
+function search(t) {
+  if (search === 'movie-this') {
+    console.log(term);
+    getMovie(term);
+  } else if (search === 'concert-this') {
+    getConcert(term);
+  } else if (search === 'spotify-this-song') {
+    getSpotifySongDetails(term);
+  } else if (search === 'do-what-it-says') {
+    getDoWhatItSays();
+  }
 }
 
 function getMovie(movie) {
@@ -81,7 +86,7 @@ function getSpotifySongDetails(song) {
   spotify.search(
     {
       type: 'track',
-      query: 'All the Small Things'
+      query: song
     },
     function(err, data) {
       if (err) {
@@ -101,4 +106,25 @@ function getSpotifySongDetails(song) {
       // console.log(data.tracks.items.artist);
     }
   );
+}
+
+function getDoWhatItSays() {
+  fs.readFile('random.txt', 'utf8', (err, data) => {
+    if (err) {
+      return console.log(error);
+    }
+    const dataArr = data.split(',');
+
+    search = dataArr[0];
+    term = dataArr[1];
+
+    if (search === 'movie-this') {
+      console.log(term);
+      getMovie(term);
+    } else if (search === 'concert-this') {
+      getConcert(term);
+    } else if (search === 'spotify-this-song') {
+      getSpotifySongDetails(term);
+    }
+  });
 }
