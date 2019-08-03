@@ -1,3 +1,7 @@
+require('dotenv').config();
+var keys = require('./keys.js');
+var moment = require('moment');
+
 const axios = require('axios');
 const fs = require('fs');
 
@@ -11,9 +15,8 @@ const divider =
 
 // Print whether searching for a show or actor, print the term as well
 
-function search(t) {
+function searchFor(s, t) {
   if (search === 'movie-this') {
-    console.log(term);
     getMovie(term);
   } else if (search === 'concert-this') {
     getConcert(term);
@@ -28,7 +31,6 @@ function getMovie(movie) {
   axios
     .get(`http://www.omdbapi.com/?t=${movie}&plot=short&apikey=trilogy`)
     .then(function(response) {
-      console.log(response.data);
       const jsonData = response.data;
       var movieData = [
         'Title ' + jsonData.Title,
@@ -58,13 +60,18 @@ function getConcert(artist) {
       //console.log(response.data)
       const jsonData = response.data;
       let concertData = '';
+      let wrapped = '';
       //console.log(jsonData)
       jsonData.forEach(event => {
         //console.log(event)
         concertData = [
           'Name ' + event.venue.name,
           'Location ' + event.venue.city,
-          'Date ' + event.datetime
+          'Date ' +
+            moment(event.datetime.replace(/-/g, '').substring(0, 7)).format(
+              'MM/DD/YYYY'
+            )
+          // 'Date ' + moment(event.datetime, 'YYYYMMDD')
         ].join('\n\n');
         console.log(concertData + divider);
       });
@@ -78,10 +85,11 @@ function getConcert(artist) {
 function getSpotifySongDetails(song) {
   var Spotify = require('node-spotify-api');
 
-  var spotify = new Spotify({
-    id: '76f59ee035304da18dc8d5c334ccff58',
-    secret: 'b683280cd1dd4334ba78aabc812fd982'
-  });
+  var spotify = new Spotify(keys.spotify);
+  // var spotify = new Spotify({
+  //   id: '76f59ee035304da18dc8d5c334ccff58',
+  //   secret: 'b683280cd1dd4334ba78aabc812fd982'
+  // });
 
   spotify.search(
     {
@@ -118,13 +126,8 @@ function getDoWhatItSays() {
     search = dataArr[0];
     term = dataArr[1];
 
-    if (search === 'movie-this') {
-      console.log(term);
-      getMovie(term);
-    } else if (search === 'concert-this') {
-      getConcert(term);
-    } else if (search === 'spotify-this-song') {
-      getSpotifySongDetails(term);
-    }
+    searchFor(search, term);
   });
 }
+
+searchFor(search, term);
