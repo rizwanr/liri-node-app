@@ -86,10 +86,6 @@ function getSpotifySongDetails(song) {
   var Spotify = require('node-spotify-api');
 
   var spotify = new Spotify(keys.spotify);
-  // var spotify = new Spotify({
-  //   id: '76f59ee035304da18dc8d5c334ccff58',
-  //   secret: 'b683280cd1dd4334ba78aabc812fd982'
-  // });
 
   spotify.search(
     {
